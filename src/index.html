@@ -409,14 +409,14 @@
             raviranjanjha.com ↗
           </a>
           <a
-            href="https://github.com/raviranjanjha"
+            href="https://github.com/ranjanjharavi"
             target="_blank"
             rel="noopener noreferrer"
             class="hover:text-lab-text transition-colors">
             GitHub ↗
           </a>
           <a
-            href="https://x.com/raviranjanjha"
+            href="https://x.com/ranjanjharavi"
             target="_blank"
             rel="noopener noreferrer"
             class="hover:text-lab-text transition-colors">
@@ -459,7 +459,7 @@
           <div
             class="sticky top-0 z-20 px-6 py-4 bg-lab-elevated/90 backdrop-blur-md border-b border-lab-border flex items-center justify-between gap-4">
             <div class="flex items-center gap-2.5">
-              <span class="font-mono text-xs text-emerald-400">// ARCHITECTURE NOTE</span>
+              <span id="drawerNoteType" class="font-mono text-xs text-emerald-400">// ARCHITECTURE NOTE</span>
               <span id="drawerStatusBadge"></span>
             </div>
             <div class="flex items-center gap-2">
@@ -470,7 +470,7 @@
               <button
                 id="closeDrawerBtn"
                 type="button"
-                aria-label="Close Architecture Note"
+                aria-label="Close project details"
                 class="p-1.5 rounded-lg bg-lab-subtle hover:bg-lab-bg text-lab-muted hover:text-lab-text border border-lab-border transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -491,6 +491,12 @@
               <h2 id="drawerTitle" class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-lab-text"></h2>
               <p id="drawerHook" class="text-base text-lab-muted leading-relaxed"></p>
               <div id="drawerStackPills" class="flex flex-wrap gap-1.5 pt-1"></div>
+            </div>
+
+            <!-- In-progress notes still include the available project brief. -->
+            <div id="drawerNotesPending" class="hidden rounded-xl border border-lab-border bg-lab-bg p-4 space-y-2">
+              <h3 class="font-mono text-sm font-semibold text-emerald-700 dark:text-emerald-400">Notes are compiling.</h3>
+              <p id="drawerNotesPendingCopy" class="text-sm text-lab-muted leading-relaxed"></p>
             </div>
 
             <!-- Project Links inside Drawer -->
@@ -514,7 +520,7 @@
             </div>
 
             <!-- Section 1: Why I Built It -->
-            <div class="space-y-2.5">
+            <div id="drawerWhyBuiltSection" class="space-y-2.5">
               <h3 class="text-xs font-mono uppercase tracking-wider text-emerald-400 flex items-center gap-2">
                 <span>01 // Why I Built It</span>
               </h3>
@@ -523,17 +529,17 @@
                 class="text-sm sm:text-base text-lab-text/90 leading-relaxed bg-lab-bg/60 p-4 rounded-xl border border-lab-border"></p>
             </div>
 
-            <!-- Section 2: Architecture & Engineering Trade-offs -->
-            <div class="space-y-3">
+            <!-- Section 2: Full notes or an available architecture summary -->
+            <div id="drawerArchitectureSection" class="space-y-3">
               <h3 class="text-xs font-mono uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-                <span>02 // Architecture &amp; Trade-offs</span>
+                <span id="drawerArchitectureHeading">02 // Architecture &amp; Trade-offs</span>
               </h3>
               <ul id="drawerTradeoffs" class="space-y-2.5 text-sm text-lab-muted"></ul>
             </div>
 
             <!-- Section 3: Embedded Terminal Output / Benchmark Trace -->
-            <div class="space-y-2.5">
-              <div class="flex items-center justify-between">
+            <div id="drawerTraceSection" class="space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
                 <h3 class="text-xs font-mono uppercase tracking-wider text-emerald-400">
                   03 // Benchmark &amp; Execution Trace
                 </h3>
@@ -552,22 +558,6 @@
                   class="p-4 text-xs font-mono text-zinc-200 overflow-x-auto leading-relaxed"></pre>
               </div>
             </div>
-
-            <!-- Section 4: Raw Entry JSON Inspector -->
-            <details class="group rounded-xl border border-lab-border bg-lab-bg overflow-hidden">
-              <summary
-                class="px-4 py-2.5 cursor-pointer font-mono text-xs text-lab-muted hover:text-lab-text flex items-center justify-between select-none">
-                <span>
-                  Inspect raw
-                  <code class="text-emerald-400">projects.data.json</code>
-                  node
-                </span>
-                <span class="group-open:rotate-180 transition-transform">▼</span>
-              </summary>
-              <pre
-                id="drawerRawJson"
-                class="p-4 border-t border-lab-border text-[11px] font-mono text-emerald-400 overflow-x-auto"></pre>
-            </details>
           </div>
 
           <!-- Drawer Footer -->

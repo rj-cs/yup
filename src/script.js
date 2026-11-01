@@ -11,11 +11,15 @@
  * @property {string[]} stack - Tech stack pills (Go, TypeScript, Vanilla JS, SQLite, .NET, Shell)
  * @property {string} demoUrl - Live playground or interactive release URL
  * @property {string} repoUrl - GitHub source link
- * @property {string} updated - Last updated timestamp
- * @property {string} benchmarkMetric - Key performance highlight
- * @property {string} whyBuilt - Deep dive into the problem that sparked the tool
- * @property {string[]} tradeoffs - Engineering architecture & trade-off bullets
- * @property {string} terminalTrace - Simulated CLI/benchmark output shown in the drawer
+ * @property {string} [updated] - Last updated timestamp
+ * @property {string} [version] - Release version when no update timestamp is available
+ * @property {string} [benchmarkMetric] - Key performance highlight
+ * @property {string} [metrics] - Performance highlight for project briefs
+ * @property {string} [whyBuilt] - Deep dive into the problem that sparked the tool
+ * @property {string[]} [tradeoffs] - Published architecture notes; absent or empty while compiling
+ * @property {string} [architecture] - Short architecture summary for project briefs
+ * @property {string} [terminalTrace] - Simulated CLI/benchmark output shown in the drawer
+ * @property {string} [snippet] - Example output for project briefs
  */
 
 /** @type {ProjectEntry[]} */
@@ -519,6 +523,10 @@ function getStatusBadgeHtml(status) {
   return `<span class="px-2 py-0.5 rounded-full text-[11px] font-mono font-medium border ${cls}">${escapeHtml(status)}</span>`;
 }
 
+function hasArchitectureNote(project) {
+  return Array.isArray(project.tradeoffs) && project.tradeoffs.length > 0;
+}
+
 /**
  * Theme Engine (Dark-mode first + localStorage persistence)
  */
@@ -672,7 +680,7 @@ function renderProjectsGrid() {
                     ${escapeHtml(project.title)}
                   </h3>
                 </div>
-                <span class="font-mono text-[11px] text-lab-muted block mt-0.5">${escapeHtml(project.category)} • ${escapeHtml(project.benchmarkMetric)}</span>
+                <span class="font-mono text-[11px] text-lab-muted block mt-0.5">${escapeHtml(project.category)} • ${escapeHtml(project.benchmarkMetric || project.metrics || 'Notes compiling')}</span>
               </div>
               ${getStatusBadgeHtml(project.status)}
             </div>
@@ -701,6 +709,7 @@ function renderProjectsGrid() {
             <!-- Quick-Action Links Row -->
             <div class="flex items-center justify-between text-xs font-mono pt-0.5">
               <div class="flex items-center gap-3">
+                ${project.demoUrl && !project.demoUrl.startsWith('#') ? `
                 <a
                   href="${escapeHtml(project.demoUrl)}"
                   target="_blank"
@@ -710,6 +719,7 @@ function renderProjectsGrid() {
                   <span>Demo</span>
                   <span class="text-[10px]">↗</span>
                 </a>
+                ` : ''}
                 <a
                   href="${escapeHtml(project.repoUrl)}"
                   target="_blank"
@@ -724,9 +734,10 @@ function renderProjectsGrid() {
               <button
                 type="button"
                 data-open-drawer="${escapeHtml(project.id)}"
+                aria-label="${hasArchitectureNote(project) ? 'Read architecture note' : 'View project brief'} for ${escapeHtml(project.title)}"
                 class="open-drawer-btn text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center gap-1 group/arch"
               >
-                <span>Architecture Note</span>
+                <span>${hasArchitectureNote(project) ? 'Architecture Note' : 'Notes compiling'}</span>
                 <span class="transform group-hover/arch:translate-x-0.5 transition-transform">→</span>
               </button>
             </div>
@@ -791,10 +802,20 @@ function openArchitectureDrawer(projectId) {
   if (!project) return;
 
   state.activeDrawerProjectId = projectId;
+  const hasNotes = hasArchitectureNote(project);
+  const tradeoffs = hasNotes ? project.tradeoffs : project.architecture ? [project.architecture] : [];
+  const metric = project.benchmarkMetric || project.metrics || '';
+  const trace = project.terminalTrace || project.snippet || '';
 
+  document.getElementById('drawerNoteType').textContent = hasNotes ? '// ARCHITECTURE NOTE' : '// PROJECT BRIEF';
+  document.getElementById('drawerNotesPending').classList.toggle('hidden', hasNotes);
+  document.getElementById('drawerNotesPendingCopy').textContent =
+    `The ${project.title} architecture write-up is still on the workbench. Here’s the project brief in the meantime.`;
   document.getElementById('drawerStatusBadge').innerHTML = getStatusBadgeHtml(project.status);
   document.getElementById('drawerCategory').textContent = project.category;
-  document.getElementById('drawerUpdated').textContent = `Updated ${project.updated}`;
+  document.getElementById('drawerUpdated').textContent = project.updated
+    ? `Updated ${project.updated}`
+    : project.version || 'Project brief';
   document.getElementById('drawerTitle').textContent = project.title;
   document.getElementById('drawerHook').textContent = project.hook;
 
@@ -806,11 +827,18 @@ function openArchitectureDrawer(projectId) {
     )
     .join('');
 
-  document.getElementById('drawerLiveDemoLink').href = project.demoUrl;
+  const demoLink = document.getElementById('drawerLiveDemoLink');
+  demoLink.href = project.demoUrl || '#';
+  demoLink.classList.toggle('hidden', !project.demoUrl || project.demoUrl.startsWith('#'));
   document.getElementById('drawerGithubLink').href = project.repoUrl;
-  document.getElementById('drawerWhyBuilt').textContent = project.whyBuilt;
+  document.getElementById('drawerWhyBuilt').textContent = project.whyBuilt || '';
+  document.getElementById('drawerWhyBuiltSection').classList.toggle('hidden', !project.whyBuilt);
 
-  document.getElementById('drawerTradeoffs').innerHTML = project.tradeoffs
+  document.getElementById('drawerArchitectureHeading').textContent = hasNotes
+    ? '02 // Architecture & Trade-offs'
+    : '02 // Architecture at a Glance';
+  document.getElementById('drawerArchitectureSection').classList.toggle('hidden', tradeoffs.length === 0);
+  document.getElementById('drawerTradeoffs').innerHTML = tradeoffs
     .map(
       (item) => `
         <li class="flex items-start gap-2.5 bg-lab-bg/40 p-3 rounded-lg border border-lab-border">
@@ -821,9 +849,10 @@ function openArchitectureDrawer(projectId) {
     )
     .join('');
 
-  document.getElementById('drawerMetricBadge').textContent = project.benchmarkMetric;
-  document.getElementById('drawerTerminalSnippet').textContent = project.terminalTrace;
-  document.getElementById('drawerRawJson').textContent = JSON.stringify(project, null, 2);
+  document.getElementById('drawerMetricBadge').textContent = metric;
+  document.getElementById('drawerMetricBadge').classList.toggle('hidden', !metric);
+  document.getElementById('drawerTerminalSnippet').textContent = trace;
+  document.getElementById('drawerTraceSection').classList.toggle('hidden', !trace);
 
   const drawer = document.getElementById('architectureDrawer');
   drawer.classList.remove('hidden');
@@ -844,7 +873,7 @@ function buildCommandItems() {
   const projectCommands = PROJECTS_DATA.map((p) => ({
     id: `proj-${p.id}`,
     group: 'Projects',
-    title: `${p.title} — Open Architecture Note`,
+    title: `${p.title} — ${hasArchitectureNote(p) ? 'Open Architecture Note' : 'View Project Brief'}`,
     subtitle: `${p.category} • ${p.stack.join(', ')}`,
     badge: p.status,
     action: () => openArchitectureDrawer(p.id)
