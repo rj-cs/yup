@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>yupcode_ — Indie Software Lab & Weekend Code Experiments by Ravi Ranjan</title>
+    <meta
+      name="description"
+      content="Small tools, local-first apps, CLI utilities, and weekend code experiments built by Ravi Ranjan." />
+
+    <!-- Site icons: terminal prompt in the lab's emerald accent -->
+    <link rel="icon" href="./favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" sizes="180x180" />
+
+    <!-- Google Fonts: Poppins & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet" />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./tailwind.config.js"></script>
+
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="min-h-screen flex flex-col relative selection:bg-emerald-500/20 selection:text-emerald-400">
+    <!-- Background Technical Grid & Top Ambient Glow -->
+    <div class="fixed inset-0 bg-tech-grid pointer-events-none z-0"></div>
+    <div class="fixed inset-x-0 top-0 h-96 ambient-glow pointer-events-none z-0"></div>
+
+    <!--
+       HEADER / NAVBAR [Minimalist branding (yupcode_), status indicator, Cmd+K, theme toggle]
+    -->
+    <header
+      class="sticky top-0 z-30 backdrop-blur-md bg-[var(--bg-primary)]/80 border-b border-lab-border transition-colors">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <!-- Left: Brand + Status Indicator Badge -->
+        <div class="flex items-center gap-3 sm:gap-4">
+          <a
+            href="#"
+            class="group flex items-center gap-1.5 font-mono font-semibold text-base sm:text-lg tracking-tight text-lab-text focus:outline-none">
+            <span class="text-emerald-500 font-bold">&gt;</span>
+            <span>yupcode</span>
+            <span class="text-emerald-500 cursor-blink">_</span>
+          </a>
+
+          <!-- Status Badge -->
+          <a
+            href="#lab-notes"
+            class="hidden sm:inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-mono bg-lab-elevated border border-lab-border text-lab-muted hover:text-lab-text hover:border-lab-borderHover transition-colors">
+            <span class="relative flex h-2 w-2">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span>Shipping experiments</span>
+          </a>
+        </div>
+
+        <!-- Right: Command Palette Trigger, Theme Toggle, External Author Link -->
+        <div class="flex items-center gap-2 sm:gap-2.5">
+          <!-- Command Palette Button -->
+          <button
+            id="cmdKTriggerBtn"
+            type="button"
+            aria-label="Open Command Palette"
+            class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-mono bg-lab-elevated hover:bg-lab-subtle text-lab-muted hover:text-lab-text border border-lab-border transition-all">
+            <svg class="w-3.5 h-3.5 text-lab-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <span class="hidden sm:inline">Quick jump...</span>
+            <kbd class="px-1.5 py-0.5 text-[10px] rounded bg-lab-subtle border border-lab-border text-lab-text">⌘K</kbd>
+          </button>
+
+          <!-- Theme Toggle Button -->
+          <button
+            id="themeToggleBtn"
+            type="button"
+            aria-label="Toggle Dark or Light Mode"
+            title="Toggle Theme (T)"
+            class="p-2 rounded-lg bg-lab-elevated hover:bg-lab-subtle text-lab-muted hover:text-lab-text border border-lab-border transition-colors">
+            <!-- Sun icon (shown in dark mode) -->
+            <svg
+              id="themeIconSun"
+              class="w-4 h-4 hidden dark:block"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <!-- Moon icon (shown in light mode) -->
+            <svg
+              id="themeIconMoon"
+              class="w-4 h-4 block dark:hidden"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+          </button>
+
+          <!-- External Link to raviranjanjha.com -->
+          <a
+            href="https://raviranjanjha.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-mono bg-lab-elevated hover:bg-lab-subtle text-lab-muted hover:text-lab-text border border-lab-border transition-colors"
+            title="Visit Ravi Ranjan's primary website">
+            <span class="hidden lg:inline">raviranjanjha.com</span>
+            <span class="lg:hidden">ravi</span>
+            <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M7 17L17 7M17 7H8M17 7V16"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-24 space-y-24">
+      <!--
+         HERO SECTION & INTERACTIVE TERMINAL FILTER BAR
+      -->
+      <section class="space-y-8">
+        <!-- Top Metadata Breadcrumb -->
+        <div class="flex flex-wrap items-center gap-2 text-xs font-mono text-lab-muted">
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            INDIE SOFTWARE LAB
+          </span>
+          <span>//</span>
+          <span>
+            Curated by
+            <a
+              href="https://raviranjanjha.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-lab-text underline decoration-lab-border hover:decoration-emerald-500 transition-colors">
+              Ravi Ranjan
+            </a>
+          </span>
+          <span class="hidden sm:inline">//</span>
+          <span class="hidden sm:inline text-lab-muted">Zero-cloud • Local-first • Fast binaries</span>
+        </div>
+
+        <!-- Builder Manifesto Headline -->
+        <div class="max-w-3xl space-y-4">
+          <h1 class="text-3xl sm:text-5xl font-semibold tracking-tight text-lab-text leading-[1.15]">
+            Small tools, local-first apps, and
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+              weekend code experiments.
+            </span>
+          </h1>
+          <p class="text-base sm:text-lg text-lab-muted leading-relaxed font-normal">
+            <span
+              class="font-mono text-xs sm:text-sm text-lab-text bg-lab-elevated px-1.5 py-0.5 rounded border border-lab-border">
+              yupcode.com
+            </span>
+            is my builder’s sandbox. No SaaS paywalls, no telemetry bloat—just fast CLI utilities, browser-native
+            WebAssembly/WebGPU tools, and systems experiments shipped in the open.
+          </p>
+        </div>
+
+        <!-- Terminal-Inspired Interactive Filter & Query Console -->
+        <div
+          id="projects"
+          class="scroll-mt-24 rounded-xl bg-lab-elevated border border-lab-border shadow-xl overflow-hidden">
+          <!-- Terminal Window Titlebar -->
+          <div
+            class="px-4 py-2.5 bg-lab-subtle/70 border-b border-lab-border flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500/70 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500/70 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/70 inline-block"></span>
+              <span class="ml-2 font-mono text-xs text-lab-muted">ravi@yupcode:~/projects $ query --interactive</span>
+            </div>
+            <div class="flex items-center gap-3 font-mono text-xs text-lab-muted">
+              <span id="activeFilterStats">Showing 6 of 6 experiments</span>
+              <button
+                id="resetFiltersBtn"
+                type="button"
+                class="hidden text-emerald-400 hover:underline focus:outline-none">
+                [reset flags]
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Controls Body -->
+          <div class="p-4 sm:p-5 space-y-4">
+            <!-- Row 1: Search Input + Category Tabs -->
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+              <!-- Category Filter Pills -->
+              <div
+                class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0"
+                role="tablist"
+                aria-label="Project Categories"
+                id="categoryFilterBar">
+                <!-- Populated dynamically via JS -->
+              </div>
+
+              <!-- Live Search Input -->
+              <div class="relative flex-shrink-0 w-full lg:w-72">
+                <span
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none font-mono text-xs text-emerald-500">
+                  $
+                </span>
+                <input
+                  id="projectSearchInput"
+                  type="text"
+                  placeholder="grep title, stack, problem..."
+                  aria-label="Filter projects by keyword"
+                  class="w-full pl-7 pr-14 py-1.5 rounded-lg text-xs font-mono bg-lab-bg text-lab-text placeholder-lab-muted border border-lab-border focus:outline-none focus:border-emerald-500 transition-colors" />
+                <kbd
+                  class="absolute inset-y-1.5 right-2 px-1.5 flex items-center text-[10px] font-mono text-lab-muted bg-lab-elevated rounded border border-lab-border pointer-events-none">
+                  /
+                </kbd>
+              </div>
+            </div>
+
+            <!-- Row 2: Tech Stack Filter Pills -->
+            <div class="pt-3 border-t border-lab-border/60 flex flex-wrap items-center gap-2">
+              <span class="font-mono text-[11px] uppercase tracking-wider text-lab-muted mr-1">--stack=</span>
+              <div id="stackFilterBar" class="flex flex-wrap items-center gap-1.5">
+                <!-- Populated dynamically via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!--
+         FEATURED / FLAGSHIP PROJECTS GRID
+      -->
+      <section aria-labelledby="projects-heading" class="space-y-6">
+        <div class="flex items-center gap-2.5">
+          <h2 id="projects-heading" class="text-sm font-mono uppercase tracking-wider text-lab-muted">
+            Flagship Builds &amp; Experiments
+          </h2>
+          <span class="h-px w-12 bg-lab-border"></span>
+        </div>
+
+        <!-- Projects Grid Container -->
+        <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Populated dynamically from PROJECTS_DATA -->
+        </div>
+
+        <!-- Empty State when no project matches filter -->
+        <div
+          id="emptyProjectsState"
+          class="hidden rounded-xl bg-lab-elevated border border-dashed border-lab-border p-12 text-center space-y-3">
+          <div
+            class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-lab-subtle text-emerald-400 font-mono text-sm">
+            0
+          </div>
+          <h3 class="text-base font-medium text-lab-text">No matching lab experiments found</h3>
+          <p class="text-xs font-mono text-lab-muted max-w-md mx-auto">
+            Query returned 0 exit status. Try clearing your stack filter or searching a broader term.
+          </p>
+          <button
+            id="emptyResetBtn"
+            type="button"
+            class="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono bg-emerald-500 text-zinc-950 font-medium hover:bg-emerald-400 transition-colors">
+            Reset all filters
+          </button>
+        </div>
+      </section>
+
+      <!--
+         THE TINKERING LOG (/now or Lab Notes)
+         Chronological feed of micro-updates, benchmarks, and half-baked ideas
+      -->
+      <section id="lab-notes" class="scroll-mt-24 space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-lab-border pb-4">
+          <div>
+            <div class="flex items-center gap-2 font-mono text-xs text-emerald-400 mb-1">
+              <span>/now</span>
+              <span>•</span>
+              <span>WORKBENCH STREAM</span>
+            </div>
+            <h2 class="text-2xl font-semibold tracking-tight text-lab-text">The Tinkering Log</h2>
+          </div>
+          <p class="text-xs sm:text-sm text-lab-muted max-w-md">
+            Raw micro-updates, benchmark runs, and half-baked prototypes currently on the workbench before they graduate
+            to standalone repos.
+          </p>
+        </div>
+
+        <!-- Timeline Feed -->
+        <div id="labNotesFeed" class="relative pl-6 sm:pl-8 border-l border-lab-border space-y-8">
+          <!-- Populated dynamically from LAB_NOTES_DATA -->
+        </div>
+      </section>
+
+      <!--
+         BUILDER MANIFESTO & PHILOSOPHY
+      -->
+      <section id="manifesto" class="scroll-mt-24">
+        <!-- Builder Manifesto & Philosophy -->
+        <div class="space-y-5 bg-lab-elevated border border-lab-border rounded-xl p-6">
+          <div class="inline-flex items-center gap-2 font-mono text-xs text-emerald-400">
+            <span>// MANIFESTO.md</span>
+          </div>
+          <h2 class="text-xl font-semibold tracking-tight text-lab-text">Why an indie software lab?</h2>
+          <div class="space-y-3.5 text-sm text-lab-muted leading-relaxed">
+            <p>
+              Modern software often feels heavy—wrapped in mandatory cloud accounts, sluggish Electron wrappers, and
+              recurring subscriptions for tools that could be a 4MB static binary or a single local-first browser tab.
+            </p>
+            <p>
+              I built
+              <span class="text-lab-text font-medium">yupcode.com</span>
+              as a permanent home for my weekend code experiments, developer utilities, and systems deep-dives.
+            </p>
+          </div>
+
+          <!-- 3 Core Principles -->
+          <ul class="space-y-3 pt-2 border-t border-lab-border text-xs font-mono">
+            <li class="flex items-start gap-2.5">
+              <span class="text-emerald-400 font-bold">01</span>
+              <div>
+                <span class="text-lab-text font-medium">Local-First by Default:</span>
+                <span class="text-lab-muted block mt-0.5">
+                  Your data stays in SQLite, IndexedDB, or your local filesystem.
+                </span>
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-emerald-400 font-bold">02</span>
+              <div>
+                <span class="text-lab-text font-medium">Sub-Millisecond Ergonomics:</span>
+                <span class="text-lab-muted block mt-0.5">
+                  Keyboard-first UIs, zero layout shift, and measurable latency budgets.
+                </span>
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-emerald-400 font-bold">03</span>
+              <div>
+                <span class="text-lab-text font-medium">Radical Simplicity:</span>
+                <span class="text-lab-muted block mt-0.5">
+                  Ship small, sharp tools that do one job exceptionally well.
+                </span>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Author Card -->
+          <div class="pt-4 border-t border-lab-border flex items-center justify-between">
+            <div>
+              <div class="text-xs font-medium text-lab-text">Ravi Ranjan</div>
+              <div class="text-[11px] font-mono text-lab-muted">Senior Software Engineer &amp; Indie Builder</div>
+            </div>
+            <a
+              href="https://raviranjanjha.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-3 py-1.5 rounded-lg text-xs font-mono bg-lab-subtle hover:bg-emerald-500/10 text-lab-text hover:text-emerald-400 border border-lab-border transition-colors">
+              raviranjanjha.com ↗
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!--
+       FOOTER
+       Built by Ravi Ranjan, links to raviranjanjha.com, GitHub, X/Twitter, RSS
+    -->
+    <footer class="relative z-10 border-t border-lab-border bg-lab-elevated/60">
+      <div
+        class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-lab-muted">
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-500 font-bold">&gt;</span>
+          <span class="text-lab-text font-semibold">yupcode_</span>
+          <span>— Built by</span>
+          <a
+            href="https://raviranjanjha.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-lab-text hover:text-emerald-400 underline decoration-lab-border transition-colors">
+            Ravi Ranjan
+          </a>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-5">
+          <a
+            href="https://raviranjanjha.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-lab-text transition-colors">
+            raviranjanjha.com ↗
+          </a>
+          <a
+            href="https://github.com/raviranjanjha"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-lab-text transition-colors">
+            GitHub ↗
+          </a>
+          <a
+            href="https://x.com/raviranjanjha"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-lab-text transition-colors">
+            X / Twitter ↗
+          </a>
+          <button
+            id="rssFeedBtn"
+            type="button"
+            class="hover:text-emerald-400 transition-colors flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+            </svg>
+            <span>RSS.xml</span>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+    <!--
+       "HOW IT WORKS" ARCHITECTURE DRAWER / SLIDE-OVER MODAL
+       Opens when clicking a project card or "Read Architecture Note"
+    -->
+    <div
+      id="architectureDrawer"
+      class="fixed inset-0 z-50 hidden"
+      aria-labelledby="drawerTitle"
+      role="dialog"
+      aria-modal="true">
+      <!-- Backdrop -->
+      <div id="drawerBackdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"></div>
+
+      <div class="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
+        <div
+          class="w-screen max-w-2xl bg-lab-elevated border-l border-lab-border shadow-2xl flex flex-col justify-between overflow-y-auto">
+          <!-- Drawer Sticky Top Bar -->
+          <div
+            class="sticky top-0 z-20 px-6 py-4 bg-lab-elevated/90 backdrop-blur-md border-b border-lab-border flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+              <span class="font-mono text-xs text-emerald-400">// ARCHITECTURE NOTE</span>
+              <span id="drawerStatusBadge"></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <kbd
+                class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-lab-subtle text-lab-muted rounded border border-lab-border">
+                ESC
+              </kbd>
+              <button
+                id="closeDrawerBtn"
+                type="button"
+                aria-label="Close Architecture Note"
+                class="p-1.5 rounded-lg bg-lab-subtle hover:bg-lab-bg text-lab-muted hover:text-lab-text border border-lab-border transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Drawer Main Content -->
+          <div class="p-6 sm:p-8 space-y-8 flex-1">
+            <!-- Title & Hook -->
+            <div class="space-y-3">
+              <div class="flex flex-wrap items-center gap-2 text-xs font-mono text-lab-muted">
+                <span id="drawerCategory"></span>
+                <span>•</span>
+                <span id="drawerUpdated"></span>
+              </div>
+              <h2 id="drawerTitle" class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-lab-text"></h2>
+              <p id="drawerHook" class="text-base text-lab-muted leading-relaxed"></p>
+              <div id="drawerStackPills" class="flex flex-wrap gap-1.5 pt-1"></div>
+            </div>
+
+            <!-- Project Links inside Drawer -->
+            <div class="p-3.5 rounded-xl bg-lab-bg border border-lab-border flex flex-wrap items-center gap-3">
+              <a
+                id="drawerLiveDemoLink"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-3 py-1 rounded-md text-xs font-mono font-medium bg-emerald-500 text-zinc-950 hover:bg-emerald-400 transition-colors">
+                Live Demo ↗
+              </a>
+              <a
+                id="drawerGithubLink"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-3 py-1 rounded-md text-xs font-mono bg-lab-elevated hover:bg-lab-subtle text-lab-text border border-lab-border transition-colors">
+                Source ↗
+              </a>
+            </div>
+
+            <!-- Section 1: Why I Built It -->
+            <div class="space-y-2.5">
+              <h3 class="text-xs font-mono uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                <span>01 // Why I Built It</span>
+              </h3>
+              <p
+                id="drawerWhyBuilt"
+                class="text-sm sm:text-base text-lab-text/90 leading-relaxed bg-lab-bg/60 p-4 rounded-xl border border-lab-border"></p>
+            </div>
+
+            <!-- Section 2: Architecture & Engineering Trade-offs -->
+            <div class="space-y-3">
+              <h3 class="text-xs font-mono uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                <span>02 // Architecture &amp; Trade-offs</span>
+              </h3>
+              <ul id="drawerTradeoffs" class="space-y-2.5 text-sm text-lab-muted"></ul>
+            </div>
+
+            <!-- Section 3: Embedded Terminal Output / Benchmark Trace -->
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-mono uppercase tracking-wider text-emerald-400">
+                  03 // Benchmark &amp; Execution Trace
+                </h3>
+                <span
+                  id="drawerMetricBadge"
+                  class="font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"></span>
+              </div>
+              <div class="rounded-xl overflow-hidden border border-lab-border bg-[#09090B]">
+                <div
+                  class="px-3.5 py-2 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between text-[11px] font-mono text-zinc-400">
+                  <span>stdout — trace</span>
+                  <span>UTF-8</span>
+                </div>
+                <pre
+                  id="drawerTerminalSnippet"
+                  class="p-4 text-xs font-mono text-zinc-200 overflow-x-auto leading-relaxed"></pre>
+              </div>
+            </div>
+
+            <!-- Section 4: Raw Entry JSON Inspector -->
+            <details class="group rounded-xl border border-lab-border bg-lab-bg overflow-hidden">
+              <summary
+                class="px-4 py-2.5 cursor-pointer font-mono text-xs text-lab-muted hover:text-lab-text flex items-center justify-between select-none">
+                <span>
+                  Inspect raw
+                  <code class="text-emerald-400">projects.data.json</code>
+                  node
+                </span>
+                <span class="group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <pre
+                id="drawerRawJson"
+                class="p-4 border-t border-lab-border text-[11px] font-mono text-emerald-400 overflow-x-auto"></pre>
+            </details>
+          </div>
+
+          <!-- Drawer Footer -->
+          <div
+            class="px-6 py-4 border-t border-lab-border bg-lab-subtle/40 flex items-center justify-between text-xs font-mono text-lab-muted">
+            <span>Authored by Ravi Ranjan</span>
+            <button id="drawerBottomCloseBtn" type="button" class="text-lab-text hover:text-emerald-400">
+              [Close Drawer]
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--
+       COMMAND PALETTE MODAL (Cmd/Ctrl + K)
+       Instant fuzzy search across projects, categories, theme actions, and links
+    -->
+    <div
+      id="cmdPaletteModal"
+      class="fixed inset-0 z-50 hidden items-start justify-center pt-16 sm:pt-24 px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command Palette">
+      <!-- Backdrop -->
+      <div id="cmdPaletteBackdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+      <!-- Modal Box -->
+      <div
+        class="relative z-10 w-full max-w-xl rounded-xl bg-lab-elevated border border-lab-border shadow-2xl overflow-hidden">
+        <!-- Search Bar -->
+        <div class="flex items-center px-4 border-b border-lab-border">
+          <span class="font-mono text-sm text-emerald-500 mr-2.5">&gt;</span>
+          <input
+            id="cmdPaletteInput"
+            type="text"
+            placeholder="Type a command or search projects (e.g. 'sqlite', 'theme', 'hstr')..."
+            class="w-full py-3.5 bg-transparent text-sm font-mono text-lab-text placeholder-lab-muted focus:outline-none"
+            autocomplete="off" />
+          <kbd
+            class="px-1.5 py-0.5 text-[10px] font-mono bg-lab-subtle text-lab-muted rounded border border-lab-border">
+            ESC
+          </kbd>
+        </div>
+
+        <!-- Command List -->
+        <div id="cmdPaletteResults" class="max-h-80 overflow-y-auto p-2 space-y-1">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Footer Hints -->
+        <div
+          class="px-4 py-2 bg-lab-subtle/60 border-t border-lab-border flex items-center justify-between text-[11px] font-mono text-lab-muted">
+          <div class="flex items-center gap-3">
+            <span>
+              <kbd class="text-lab-text">↑↓</kbd>
+              Navigate
+            </span>
+            <span>
+              <kbd class="text-lab-text">↵</kbd>
+              Execute
+            </span>
+          </div>
+          <span>yupcode_ command launcher</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container (No native alert() used) -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
